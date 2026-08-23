@@ -13,6 +13,8 @@ permissions:
   contents: read
   id-token: write
 
+# Steps are below that will be run as part of the workflow
+
 jobs:
   Terraform-validate:
     name: Terraform Validate
