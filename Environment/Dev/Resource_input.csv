@@ -1,0 +1,3 @@
+﻿RGName,Location,VnetName,VnetAddressSpace,SubnetName,SubnetAddressPrefix
+Dev-1,centralindia,Dev-Vnet-1,10.143.0.0/16,Dev-Subnet-1,10.143.1.0/24
+Dev-2,eastus,Dev-Vnet-2,10.144.0.0/16,Dev-Subnet-2,10.144.1.0/24
