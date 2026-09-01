@@ -29,7 +29,29 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # ==========================================
+      # 2. Install / Setup Terraform
+      # ==========================================
 
+      - name: Setup Terraform
+
+        uses: hashicorp/setup-terraform@v3
+
+        with:
+          terraform_version: "1.5.7"
+
+
+      # ==========================================
+      # 3. Verify Terraform Installation
+      # ==========================================
+
+      - name: Verify Terraform
+
+        shell: pwsh
+
+        run: |
+
+          terraform version
       # ==========================================
       # Check Runner
       # ==========================================
