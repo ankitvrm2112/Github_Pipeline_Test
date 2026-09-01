@@ -1,3 +1,4 @@
-﻿RGName,Location,VnetName,VnetAddressSpace,SubnetName,SubnetAddressPrefix
-Dev-1,centralindia,Dev-Vnet-1,10.143.0.0/16,Dev-Subnet-1,10.143.1.0/24
-Dev-2,eastus,Dev-Vnet-2,10.144.0.0/16,Dev-Subnet-2,10.144.1.0/24
+Timestamp,RGName ,Location  ,VnetName  ,VnetAddressSpace  ,SubnetName  ,SubnetAddressPrefix  
+Tue Sep 01 2026 17:36:40 GMT+0530 (India Standard Time),Prod-RG,Central India,Prod-Vnet,10.23.0.0/16,Prod-Subnet-1,10.23.1.0/24
+Tue Sep 01 2026 17:54:24 GMT+0530 (India Standard Time),Prod1-RG,South India,Prod1-Vnet,10.24.0.0/16,Prod-Subnet-2,10.24.1.0/24
+Tue Sep 01 2026 18:05:23 GMT+0530 (India Standard Time),Dev-1-RG,Central India,Dev-1-Vnet,10.143.0.0/16,Dev-1-Subnet,10.143.1.0/24
