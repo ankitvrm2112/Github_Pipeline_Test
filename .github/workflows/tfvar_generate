@@ -5,8 +5,7 @@ on:
     branches:
       - main
 
-  paths:
-      - Environment/Dev/Resource_input.csv
+  workflow_dispatch:
 
 permissions:
   contents: write
