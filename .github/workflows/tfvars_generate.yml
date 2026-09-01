@@ -1,106 +1,162 @@
 name: Terraform CSV Automation
 
 on:
-
   push:
-
     branches:
       - main
-
     paths:
       - 'Environment/Dev/Resource_input.csv'
 
+  workflow_dispatch:
 
 permissions:
   contents: write
-
 
 jobs:
 
   generate-tfvars:
 
+    name: Generate Terraform TFVars
+
     runs-on: windows-latest
-
-    defaults:
-      run:
-        working-directory: Environment/Dev
-
 
     steps:
 
-      # -----------------------------
-      # Checkout
-      # -----------------------------
+      # ==========================================
+      # Checkout Repository
+      # ==========================================
 
       - name: Checkout Repository
-
         uses: actions/checkout@v4
 
 
-      # -----------------------------
-      # Generate terraform.tfvars
-      # -----------------------------
+      # ==========================================
+      # Check Runner
+      # ==========================================
 
-      - name: Generate terraform.tfvars
+      - name: Check Runner
+        shell: pwsh
+        run: |
+          Write-Host "OS Information:"
+          Get-CimInstance Win32_OperatingSystem |
+            Select-Object Caption, Version
 
-        shell: powershell
+          Write-Host ""
+          Write-Host "PowerShell Version:"
+          $PSVersionTable
 
+
+      # ==========================================
+      # Verify CSV
+      # ==========================================
+
+      - name: Verify Resource Input CSV
+        shell: pwsh
         run: |
 
-          Set-ExecutionPolicy `
-            -Scope Process `
-            -ExecutionPolicy Bypass
+          $csvPath = ".\Environment\Dev\Resource_input.csv"
+
+          if (-not (Test-Path $csvPath)) {
+
+              Write-Error `
+                "Resource_input.csv not found at $csvPath"
+
+              exit 1
+          }
+
+          Write-Host `
+            "Resource_input.csv found successfully." `
+            -ForegroundColor Green
+
+
+      # ==========================================
+      # Generate terraform.tfvars
+      # ==========================================
+
+      - name: Generate terraform.tfvars
+        working-directory: Environment/Dev
+        shell: pwsh
+        run: |
+
+          Write-Host `
+            "Generating terraform.tfvars..."
+
+          # PowerShell 7 already allows script execution
+          # No need for Set-ExecutionPolicy here.
 
           .\Generate-TerraformTfvars.ps1
 
+          if (-not (Test-Path ".\terraform.tfvars")) {
 
-      # -----------------------------
-      # Terraform Format
-      # -----------------------------
+              Write-Error `
+                "terraform.tfvars was not generated!"
 
-      - name: Terraform Format
+              exit 1
+          }
 
-        shell: powershell
+          Write-Host `
+            "terraform.tfvars generated successfully." `
+            -ForegroundColor Green
 
+
+      # ==========================================
+      # Display Generated TFVars
+      # ==========================================
+
+      - name: Display terraform.tfvars
+        working-directory: Environment/Dev
+        shell: pwsh
         run: |
 
-          terraform fmt -recursive
+          Write-Host `
+            "========== terraform.tfvars =========="
+
+          Get-Content .\terraform.tfvars
 
 
-      # -----------------------------
+      # ==========================================
+      # Terraform Format
+      # ==========================================
+
+      - name: Terraform Format
+        working-directory: Environment/Dev
+        shell: pwsh
+        run: |
+
+          terraform fmt -check
+
+
+      # ==========================================
       # Terraform Init
-      # -----------------------------
+      # ==========================================
 
       - name: Terraform Init
-
-        shell: powershell
-
+        working-directory: Environment/Dev
+        shell: pwsh
         run: |
 
           terraform init -backend=false
 
 
-      # -----------------------------
+      # ==========================================
       # Terraform Validate
-      # -----------------------------
+      # ==========================================
 
       - name: Terraform Validate
-
-        shell: powershell
-
+        working-directory: Environment/Dev
+        shell: pwsh
         run: |
 
           terraform validate
 
 
-      # -----------------------------
-      # Commit generated tfvars
-      # -----------------------------
+      # ==========================================
+      # Commit terraform.tfvars
+      # ==========================================
 
       - name: Commit terraform.tfvars
-
-        shell: powershell
-
+        working-directory: Environment/Dev
+        shell: pwsh
         run: |
 
           git config user.name `
@@ -109,17 +165,22 @@ jobs:
           git config user.email `
             "41898282+github-actions[bot]@users.noreply.github.com"
 
+
           git add terraform.tfvars
+
 
           if (git diff --cached --quiet) {
 
               Write-Host `
-                "No terraform.tfvars changes."
+                "No changes in terraform.tfvars."
 
               exit 0
           }
 
+
           git commit `
             -m "Auto generate terraform.tfvars"
 
+
           git push
+
