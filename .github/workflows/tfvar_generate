@@ -1,26 +1,21 @@
 name: Terraform CSV Automation
 
 on:
-
   push:
-
     branches:
       - main
 
-   # paths:
-    #  - Environment/Dev/Resource_input.csv
-  workflow_dispatch:
-
+  paths:
+      - Environment/Dev/Resource_input.csv
 
 permissions:
   contents: write
-
 
 jobs:
 
   generate-tfvars:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -94,33 +89,33 @@ jobs:
           terraform validate
 
 
-      # -----------------------------
-      # Commit generated tfvars
-      # -----------------------------
+      # # -----------------------------
+      # # Commit generated tfvars
+      # # -----------------------------
 
-      - name: Commit terraform.tfvars
+      # - name: Commit terraform.tfvars
 
-        shell: powershell
+      #   shell: powershell
 
-        run: |
+      #   run: |
 
-          git config user.name `
-            "github-actions[bot]"
+      #     git config user.name `
+      #       "github-actions[bot]"
 
-          git config user.email `
-            "41898282+github-actions[bot]@users.noreply.github.com"
+      #     git config user.email `
+      #       "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add terraform.tfvars
+      #     git add terraform.tfvars
 
-          if (git diff --cached --quiet) {
+      #     if (git diff --cached --quiet) {
 
-              Write-Host `
-                "No terraform.tfvars changes."
+      #         Write-Host `
+      #           "No terraform.tfvars changes."
 
-              exit 0
-          }
+      #         exit 0
+      #     }
 
-          git commit `
-            -m "Auto generate terraform.tfvars"
+      #     git commit `
+      #       -m "Auto generate terraform.tfvars"
 
-          git push
+      #     git push
